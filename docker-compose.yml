@@ -5,11 +5,9 @@ services:
     image: postgres:15-alpine
     container_name: bankcards_db
     environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: bankcards_db
-      DB_USERNAME: bankcards_user
-      DB_PASSWORD: password
+      POSTGRES_DB: bankcards_db
+      POSTGRES_USER: bankcards_user
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     volumes:
@@ -24,8 +22,9 @@ services:
     depends_on:
       - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bankcards_db
-      SPRING_DATASOURCE_USERNAME: bankcards_user
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_DATASOURCE_HIKARI_CONNECTION-TIMEOUT: 30000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bankcards_db
+      DB_USERNAME: bankcards_user
+      DB_PASSWORD: password
     restart: always

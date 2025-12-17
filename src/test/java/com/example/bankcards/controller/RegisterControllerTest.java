@@ -1,5 +1,6 @@
 package com.example.bankcards.controller;
 
+import com.example.bankcards.BaseControllerTest;
 import com.example.bankcards.dto.RegisterRequest;
 import com.example.bankcards.security.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;

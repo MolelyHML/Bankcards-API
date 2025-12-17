@@ -1,4 +1,4 @@
-package com.example.bankcards.controller;
+package com.example.bankcards;
 
 import com.example.bankcards.config.properties.JwtProperties;
 import com.example.bankcards.security.JwtService;

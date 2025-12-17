@@ -28,4 +28,6 @@ services:
       DB_USERNAME: bankcards_user
       DB_PASSWORD: password
       JWT_SECRET: U3UVbubDa/OhfF9c012f5EMdXKQCjmP1M9v8v4Grgj8=
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: rootPassword
     restart: always

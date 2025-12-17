@@ -20,12 +20,15 @@ jwt:
   refreshTokenExpiration: ${REFRESH_TOKEN_EXPIRATION:86400000}
   header: Authorization
 
+bankcards:
+  admin-username: ${ADMIN_USERNAME}
+  admin-password: ${ADMIN_PASSWORD}
+
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     url: /docs/openapi.yaml
-
 server:
   port: 8083
   servlet:

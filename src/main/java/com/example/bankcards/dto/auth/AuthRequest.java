@@ -1,4 +1,4 @@
-package com.example.bankcards.dto;
+package com.example.bankcards.dto.auth;
 
 public record AuthRequest(
         String username,

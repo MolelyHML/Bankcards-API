@@ -1,7 +1,7 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.AuthRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.auth.AuthRequest;
+import com.example.bankcards.dto.auth.AuthResponse;
 import com.example.bankcards.security.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;

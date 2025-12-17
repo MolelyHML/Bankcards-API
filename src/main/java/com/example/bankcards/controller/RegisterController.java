@@ -1,6 +1,6 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.RegisterRequest;
+import com.example.bankcards.dto.auth.RegisterRequest;
 import com.example.bankcards.security.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

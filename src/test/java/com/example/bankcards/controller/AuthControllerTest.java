@@ -1,8 +1,8 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.BaseControllerTest;
-import com.example.bankcards.dto.AuthRequest;
-import com.example.bankcards.dto.AuthResponse;
+import com.example.bankcards.dto.auth.AuthRequest;
+import com.example.bankcards.dto.auth.AuthResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

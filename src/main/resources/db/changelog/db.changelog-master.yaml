@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/init_migration.sql
+  - include:
+      file: db/changelog/V1_changelog.sql

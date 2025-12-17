@@ -1,1 +1,124 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.3
+info:
+  title: Bankcards API
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+paths:
+  /registration:
+    post:
+      tags:
+        - Регистрация
+      summary: "Регистрация"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+        '400':
+          description: "Пользователь с таким именем уже зарегистрирован"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth:
+    post:
+      tags:
+        - Аутентификация
+      summary: Аутентификация пользователя
+      requestBody:
+        description: Учетные данные пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /auth/refresh-token:
+    post:
+      tags:
+        - Аутентификация
+      summary: Обновление токена доступа
+      description: Необходимо отправить refresh-token в заголовке Authorization
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Токены успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Недействительный или просроченный Refresh Token
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AuthRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        fullName:
+          type: string
+        password:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: '400'
+        message:
+          type: string
+        timestamp:
+          type: string
+security:
+  - bearerAuth: []

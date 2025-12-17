@@ -1,10 +1,13 @@
 package com.example.bankcards.service.impl;
 
+import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -25,5 +28,11 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + username + " не найден"));
+    }
+
+    @Override
+    public User getById(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Пользователь с id: " + id + " не найден"));
     }
 }

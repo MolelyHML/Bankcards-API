@@ -72,6 +72,118 @@ paths:
           description: Недействительный или просроченный Refresh Token
         '500':
           description: Внутренняя ошибка сервера
+  /cards:
+    post:
+      summary: "Создать карту"
+      tags:
+        - Управление картами
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCardDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDTO"
+        "403":
+          description: "FORBIDDEN"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: "Вывести все карты"
+      tags:
+        - Управление картами
+      parameters:
+        - name: "page"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/CardDTO"
+        "403":
+          description: "FORBIDDEN"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cards/change-status:
+    patch:
+      summary: "Изменить статус карты"
+      tags:
+        - Управление картами
+      parameters:
+        - name: "cardId"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "newStatus"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            enum:
+              - "ACTIVE"
+              - "BLOCKED"
+              - "EXPIRED"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CardDTO"
+        "403":
+          description: "FORBIDDEN"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cards/{cardId}:
+    delete:
+      summary: "Удалить карту по ID"
+      tags:
+        - Управление картами
+      parameters:
+        - name: "cardId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+        "403":
+          description: "FORBIDDEN"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -120,5 +232,44 @@ components:
           type: string
         timestamp:
           type: string
+    CreateCardDTO:
+      type: "object"
+      properties:
+        pan:
+          type: "string"
+        balance:
+          type: string
+          format: decimal
+          example: "1500.50"
+        ownerId:
+          type: "string"
+          format: "uuid"
+        expiredAt:
+          type: "string"
+          format: "date"
+    CardDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        maskedPan:
+          type: "string"
+        status:
+          type: "string"
+          enum:
+            - "ACTIVE"
+            - "BLOCKED"
+            - "EXPIRED"
+        balance:
+          type: string
+          format: decimal
+          example: "1500.50"
+        expiredAt:
+          type: "string"
+          format: "date"
+        ownerId:
+          type: "string"
+          format: "uuid"
 security:
   - bearerAuth: []

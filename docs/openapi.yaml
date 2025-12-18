@@ -75,8 +75,6 @@ paths:
   /cards:
     post:
       summary: "Создать карту"
-      tags:
-        - Управление картами
       requestBody:
         content:
           application/json:
@@ -90,30 +88,25 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/CardDTO"
-        "403":
-          description: "FORBIDDEN"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
     get:
-      summary: "Вывести все карты"
-      tags:
-        - Управление картами
+      summary: "Получить карты"
+      description: "Если пользователь админ, то будут выведены все карты. В случае рядового пользователя
+      будут отображаться только его карты."
       parameters:
         - name: "page"
           in: "query"
-          required: true
+          required: false
           schema:
             type: "integer"
             format: "int32"
+            default: "0"
         - name: "size"
           in: "query"
           required: false
           schema:
             type: "integer"
             format: "int32"
+            default: "10"
       responses:
         "200":
           description: "OK"
@@ -123,17 +116,9 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/CardDTO"
-        "403":
-          description: "FORBIDDEN"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /cards/change-status:
     patch:
       summary: "Изменить статус карты"
-      tags:
-        - Управление картами
       parameters:
         - name: "cardId"
           in: "query"
@@ -157,17 +142,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/CardDTO"
-        "403":
-          description: "FORBIDDEN"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /cards/{cardId}:
     delete:
-      summary: "Удалить карту по ID"
-      tags:
-        - Управление картами
+      summary: "Удалить карту"
       parameters:
         - name: "cardId"
           in: "path"
@@ -178,13 +155,71 @@ paths:
       responses:
         "200":
           description: "OK"
-        "403":
-          description: "FORBIDDEN"
+  /cards/{cardId}/block:
+    patch:
+      summary: "Заблокировать карту"
+      parameters:
+        - name: "cardId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
           content:
-            application/json:
+            '*/*':
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
+                $ref: "#/components/schemas/CardDTO"
+  /cards/{cardId}/balance:
+    get:
+      summary: "Вывести баланс карты"
+      parameters:
+        - name: "cardId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/BigDecimal"
+  /cards/transfer:
+    post:
+      summary: "Перевод между картами"
+      description: "В связи с требованиями, возможен перевод между картами относящимися одному пользователю."
+      parameters:
+        - name: "fromCardId"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "toCardId"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "amount"
+          in: "query"
+          required: true
+          schema:
+            type: string
+            format: decimal
+            example: "1500.50"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Void"
 components:
   securitySchemes:
     bearerAuth:
@@ -247,6 +282,12 @@ components:
         expiredAt:
           type: "string"
           format: "date"
+    BigDecimal:
+      type: "object"
+      properties: { }
+    Void:
+      type: "object"
+      properties: { }
     CardDTO:
       type: "object"
       properties:

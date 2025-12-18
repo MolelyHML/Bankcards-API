@@ -106,8 +106,75 @@ class CardControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void getAllCards_MissingParam() throws Exception {
+    void getCards_NoParams_ReturnsOkWithDefaults() throws Exception {
         mockMvc.perform(get("/cards"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void getCards_User_Success() throws Exception {
+        mockMvc.perform(get("/cards")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void blockCard_Success() throws Exception {
+        UUID cardId = UUID.randomUUID();
+
+        when(cardService.blockCard(cardId)).thenReturn(new CardDTO(
+                cardId, "************1234", CardStatus.BLOCKED, BigDecimal.ZERO, LocalDate.now(), UUID.randomUUID()
+        ));
+
+        mockMvc.perform(patch("/cards/{cardId}/block", cardId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("BLOCKED"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void getBalance_Success() throws Exception {
+        UUID cardId = UUID.randomUUID();
+        BigDecimal balance = new BigDecimal("1500.50");
+
+        when(cardService.getCardBalance(cardId)).thenReturn(balance);
+
+        mockMvc.perform(get("/cards/{cardId}/balance", cardId))
+                .andExpect(status().isOk())
+                .andExpect(content().string(balance.toString()));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void transfer_Success() throws Exception {
+        UUID fromId = UUID.randomUUID();
+        UUID toId = UUID.randomUUID();
+        BigDecimal amount = new BigDecimal("500.00");
+
+        mockMvc.perform(post("/cards/transfer")
+                        .param("fromCardId", fromId.toString())
+                        .param("toCardId", toId.toString())
+                        .param("amount", amount.toString()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void blockCard_Admin_Forbidden() throws Exception {
+        mockMvc.perform(patch("/cards/{cardId}/block", UUID.randomUUID()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void transfer_Admin_Forbidden() throws Exception {
+        mockMvc.perform(post("/cards/transfer")
+                        .param("fromCardId", UUID.randomUUID().toString())
+                        .param("toCardId", UUID.randomUUID().toString())
+                        .param("amount", "100"))
+                .andExpect(status().isForbidden());
     }
 }

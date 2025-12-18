@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,10 +43,32 @@ public class CardController {
         cardService.deleteCard(cardId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping
-    public ResponseEntity<List<CardDTO>> getAllCards(@RequestParam Integer page,
-                                                     @RequestParam(required = false) Integer size) {
-        return ResponseEntity.ok(cardService.getAllCards(page, size));
+    public ResponseEntity<List<CardDTO>> getCards(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        return ResponseEntity.ok(cardService.getCards(page, size));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/{cardId}/block")
+    public ResponseEntity<CardDTO> blockCard(@PathVariable UUID cardId) {
+        return ResponseEntity.ok(cardService.blockCard(cardId));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/{cardId}/balance")
+    public ResponseEntity<BigDecimal> getBalance(@PathVariable UUID cardId) {
+        return ResponseEntity.ok(cardService.getCardBalance(cardId));
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/transfer")
+    public ResponseEntity<Void> transfer(@RequestParam UUID fromCardId,
+                                         @RequestParam UUID toCardId,
+                                         @RequestParam BigDecimal amount) {
+        cardService.transferMoney(fromCardId, toCardId, amount);
+        return ResponseEntity.ok().build();
     }
 }

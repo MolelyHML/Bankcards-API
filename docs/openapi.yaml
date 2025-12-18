@@ -75,6 +75,8 @@ paths:
   /cards:
     post:
       summary: "Создать карту"
+      tags:
+        - Управление картами
       requestBody:
         content:
           application/json:
@@ -90,6 +92,8 @@ paths:
                 $ref: "#/components/schemas/CardDTO"
     get:
       summary: "Получить карты"
+      tags:
+        - Управление картами
       description: "Если пользователь админ, то будут выведены все карты. В случае рядового пользователя
       будут отображаться только его карты."
       parameters:
@@ -118,6 +122,8 @@ paths:
                   $ref: "#/components/schemas/CardDTO"
   /cards/change-status:
     patch:
+      tags:
+        - Управление картами
       summary: "Изменить статус карты"
       parameters:
         - name: "cardId"
@@ -144,6 +150,8 @@ paths:
                 $ref: "#/components/schemas/CardDTO"
   /cards/{cardId}:
     delete:
+      tags:
+        - Управление картами
       summary: "Удалить карту"
       parameters:
         - name: "cardId"
@@ -157,6 +165,8 @@ paths:
           description: "OK"
   /cards/{cardId}/block:
     patch:
+      tags:
+        - Управление картами
       summary: "Заблокировать карту"
       parameters:
         - name: "cardId"
@@ -174,6 +184,8 @@ paths:
                 $ref: "#/components/schemas/CardDTO"
   /cards/{cardId}/balance:
     get:
+      tags:
+        - Управление картами
       summary: "Вывести баланс карты"
       parameters:
         - name: "cardId"
@@ -191,6 +203,8 @@ paths:
                 $ref: "#/components/schemas/BigDecimal"
   /cards/transfer:
     post:
+      tags:
+        - Управление картами
       summary: "Перевод между картами"
       description: "В связи с требованиями, возможен перевод между картами относящимися одному пользователю."
       parameters:
@@ -220,6 +234,56 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Void"
+  /users:
+    get:
+      tags:
+        - Пользователи
+      summary: "Получить всех пользователей"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: "0"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+            default: "10"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/UserDTO"
+  /users/get:
+    get:
+      tags:
+        - Пользователи
+      summary: "Получить пользователя по ID"
+      description: "При вызове данного запроса админом, он может получить любого пользователя по ID.
+      Если же данные запрос вызывает пользователь, без указания id, то он получит собственные данные."
+      parameters:
+        - name: "id"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserDTO"
 components:
   securitySchemes:
     bearerAuth:
@@ -312,5 +376,15 @@ components:
         ownerId:
           type: "string"
           format: "uuid"
+    UserDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        username:
+          type: "string"
+        fullName:
+          type: "string"
 security:
   - bearerAuth: []
